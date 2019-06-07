@@ -1,0 +1,1129 @@
+;_____________________________________________________________________________
+;
+; Pi test configuration values
+;
+	VM	= 3		; VM1/VM2/VM3 selection
+	HMUL	= 1  		; hardware multiplication, 0 - no
+	HDIV 	= 1  		; hardware division, 0 - no
+	OPT 	= 3.		; use 3 if N<=14000, limits R3 to 0x1f'ff'ff'ff
+	MAXD 	= 1050.		; maximal digits (memory limited)
+;_____________________________________________________________________________
+;
+		.title	patron            	;
+		.list	meb			;
+						;
+		R0	= %0			;
+		R1	= %1			;
+		R2	= %2			;
+		R3	= %3			;
+		R4	= %4			;
+		R5	= %5			;
+		R6	= %6			;
+		R7	= %7			;
+		SP	= %6			;
+		PC	= %7			;
+						;
+		KPDR0	= 172300		; Kernel PDR0
+		KPDR1	= 172302		; Kernel PDR1
+		KPDR2	= 172304		; Kernel PDR2
+		KPDR3	= 172306		; Kernel PDR3
+		KPDR4	= 172310		; Kernel PDR4
+		KPDR5	= 172312		; Kernel PDR5
+		KPDR6	= 172314		; Kernel PDR6
+		KPDR7	= 172316		; Kernel PDR7
+						;					
+		KPAR0	= 172340		; Kernel PAR0
+		KPAR1	= 172342		; Kernel PAR1
+		KPAR2	= 172344		; Kernel PAR2
+		KPAR3	= 172346		; Kernel PAR3
+		KPAR4	= 172350		; Kernel PAR4
+		KPAR5	= 172352		; Kernel PAR5
+		KPAR6	= 172354		; Kernel PAR6
+		KPAR7	= 172356		; Kernel PAR7
+						;					
+		HPAR2	= 172512		; Halt PAR2
+		SR3	= 172516		; MMU Status 3
+		SR0	= 177572		; MMU Status 0
+		SR1	= 177574		; MMU Status 1
+		SR2	= 177576		; MMU Status 2
+					        ;
+		UPDR0	= 177600		; User PDR0
+		UPDR1	= 177602		; User PDR1
+		UPDR2	= 177604		; User PDR2
+		UPDR3	= 177606		; User PDR3
+		UPDR4	= 177610		; User PDR4
+		UPDR5	= 177612		; User PDR5
+		UPDR6	= 177614		; User PDR6
+		UPDR7	= 177616		; User PDR7
+						;				
+		UPAR0	= 177640		; User PAR0
+		UPAR1	= 177642		; User PAR1
+		UPAR2	= 177644		; User PAR2
+		UPAR3	= 177646		; User PAR3
+		UPAR4	= 177650		; User PAR4
+		UPAR5	= 177652		; User PAR5
+		UPAR6	= 177654		; User PAR6
+		UPAR7	= 177656		; User PAR7
+						;
+		PSW	= 177776		;
+						;
+		VELIM	= 177706		;
+		VECNT	= 177710		;
+		VECSR	= 177712		;
+						;
+		RXCSR	= 177560		;
+		RXDAT	= 177562		;
+		TXCSR	= 177564		;
+		TXDAT	= 177566		;
+						;
+		TXSIZE	= 128.			;
+		RXSIZE	= 16.			;
+;_____________________________________________________________________________
+;
+		.macro	.print	ARG		;
+		mov	R0,-(SP)		;
+		mov	ARG, R0			;
+		jsr	PC, print		;
+		mov	(SP)+,R0		;
+		.endm				;
+						;
+;_____________________________________________________________________________
+;
+		.macro	vect, offset, adr, val	;
+		. 	= offset		;
+.if 	nb, <adr>				;
+		.word	adr			;
+.iff						;
+		.word	.+2			;
+.endc 						;
+.if	nb, <val>				;
+		.word	val			;
+.iff            				;
+.if 	nb, <adr>				;
+		.word	340			;
+.iff						;
+		.word	0			;
+.endc						;
+.endc						;
+		.endm				;
+;_____________________________________________________________________________
+;
+		.asect      			; ловушка прерываний 0-376
+		. = 0				;
+						;
+;		vect	0			;
+.if	eq, <VM-1>				;
+		jmp	@#entry			; инструкция перехода 1801ВМ1
+.endc						;
+.if 	eq, <VM-2>				;
+		.word	entry, 340		; вектор старта 1801ВМ2
+.endc						;
+.if 	eq  <VM-3>				;
+		jmp	@#entry			; инструкция перехода 1801ВМ3
+.endc						; адрес переотбражен с 173000
+;_____________________________________________________________________________
+;
+		vect	4, trap4		;
+		vect	10, trap4		;
+		vect	14			;
+		vect	20, trap4		;
+		vect	24, entry		; VM3 entry vector
+		vect	30			;
+		vect	34			;
+		vect	40			;
+		vect	44			;
+		vect	50			;
+		vect	54			;
+		vect	60, isrrx		; rx console
+		vect	64, isrtx		; tx console
+		vect	70			;
+		vect	74			;
+		vect	100, isr50		;
+		vect	104			;
+		vect	110			;
+		vect	114			;
+		vect	120			;
+		vect	124			;
+		vect	130			;
+		vect	134			;
+		vect	140			;
+		vect	144			;
+		vect	150			;
+		vect	154			;
+		vect	160			;
+		vect	164			;
+		vect	170			;
+		vect	174			;
+		vect	200			;
+		vect	204			;
+		vect	210			;
+		vect	214			;
+		vect	220			;
+		vect	224			;
+		vect	230			;
+		vect	234			;
+		vect	240			;
+		vect	244			;
+		vect	250			;
+		vect	254			;
+		vect	260			;
+		vect	264			;
+		vect	270			;
+		vect	274			;
+		vect	300			;
+		vect	304			;
+		vect	310			;
+		vect	314			;
+		vect	320			;
+		vect	324			;
+		vect	330			;
+		vect	334			;
+		vect	340			;
+		vect	344			;
+		vect	350			;
+		vect	354			;
+		vect	360			;
+		vect	364			;
+		vect	370			;
+		vect	374			;
+;_____________________________________________________________________________
+;
+$hangf:		.word	0			;
+$ticks:		.word	0, 0			;
+						;
+$txbeg:		.word	0			;
+$txend:		.word	0			;
+$txbuf:		.blkb	TXSIZE			;
+		.even				;
+		         			;
+$rxbeg:		.word	0			;
+$rxend:		.word	0			;
+$rxbuf:		.blkb	RXSIZE			;
+		.even				;
+;_____________________________________________________________________________
+;
+isr50:		inc	$ticks			; 32-bit ticks counter
+		beq	1$			;	
+.if	eq, <VM-1>				;
+;		mov	R0, -(SP)		;
+;		mov	R1, -(SP)		;
+;		mov	#VELIM, R1		;
+;		mov	@R1, R0			;
+;		nop				;
+;		mov	R0, @R1			;
+;		nop				;
+;		inc	@R1			;
+;		nop				;
+;		mov	(SP)+, R1		;
+;		mov	(SP)+, R0		;
+.endc						;
+						;
+		rti				;
+1$:		inc	$ticks+2		;
+		rti				;
+						;
+;_____________________________________________________________________________
+;
+isrrx:		mov	R0, -(SP)		;
+		mov	$rxbeg, R0		;
+		movb	@#RXDAT, (R0)+		;
+		cmp	R0, #$rxbuf+RXSIZE	;
+		blo	1$			;
+		mov	#$rxbuf, R0		;
+1$:		mov	R0, $rxbeg		;
+		mov	(SP)+, R0		;
+		rti				;
+						;
+inkey:		mov	R1, -(SP)		;
+		mov	$rxend, R1		;
+		mov	$rxbeg, R0		;
+		sub	R1, R0			;
+		bne	1$			;
+		mov	(SP)+, R1		;
+		sec				;
+		rts	PC			;
+		             			;
+1$:		movb	(R1)+, R0		;
+		cmp	R1, #$rxbuf+RXSIZE	;
+		blo	2$			;
+		mov	#$rxbuf, R1		;
+2$:		mov	R1, $rxend		;
+		mov	(SP)+, R1		;
+		clc				;
+		rts	PC			;	
+						;
+getch:		jsr	PC, inkey		;
+		bcs	getch			;
+		rts	PC			;	
+						;
+;_____________________________________________________________________________
+;
+isrtx:		mov	R0, -(SP)		;
+		mov	$txend, R0		;
+		cmp	R0, $txbeg		;
+		bne	1$			;
+		bic	#100, @#TXCSR		;
+		mov	(SP)+, R0		;
+		rti				;
+						;
+1$:		movb	(R0)+, @#TXDAT		;
+		cmp	R0, #$txbuf+TXSIZE	;
+		blo	2$			;
+		mov	#$txbuf, R0		;
+2$:		mov	R0, $txend		;
+		mov	(SP)+, R0		;
+		rti				;
+						;		
+putch:						;
+		tstb	@#TXCSR			;
+		bpl	putch			;
+		movb	R0, @#TXDAT		;
+		rts	PC			;
+;						;
+		mov	R1, -(SP)		;
+		mov	$txbeg, R1		;
+		movb	R0, (R1)+		;
+		cmp	R1, #$txbuf+TXSIZE	;
+		blo	1$			;
+		mov	#$txbuf, R1		;
+1$:		cmp	R1, $txend		;
+		beq	1$			;
+		mov	R1, $txbeg		;
+		bis	#100, @#TXCSR		;
+		mov	(SP)+, R1		;
+		rts	PC			;
+						;
+flush:		cmp	$txbeg, $txend		;
+		bne	flush			;
+		rts	PC			;
+		                		;
+print:		mov	R1, -(SP)		;
+		mov	R0, R1			;
+1$:		movb	(R1)+, R0		;
+		beq	2$			;
+		jsr	PC, putch		;
+		br	1$			;
+2$:		mov	(SP)+, R1		;
+		rts	PC			;
+						;
+outhex:		mov	R1, -(SP)		;
+		mov	R0, -(SP)		;
+						;
+		bic	#177760, R0		;
+		movb	1$(R0), R1		;
+		mov	(SP), R0		;
+		asr	R0			;
+		asr	R0			;
+		asr	R0			;
+		asr	R0			;
+		bic	#177760, R0		;
+		movb	1$(R0), R0		;
+		swab	R0			;
+		bis	R0, R1			;
+		mov	R1, @#177714		;
+						;
+		mov	(SP), R0		;
+		swab	R0			;
+		bic	#177760, R0		;
+		movb	1$(R0), R1		;
+		movb	1(SP), R0		;
+		asr	R0			;
+		asr	R0			;
+		asr	R0			;
+		asr	R0			;
+		bic	#177760, R0		;
+		movb	1$(R0), R0		;
+		swab	R0			;
+		bis	R0, R1			;
+.if 	eq, <VM-3>				;
+		mov	R1, @#177716		;
+.iff                                		;
+		mov	R1, @#177715		;
+.endc						;
+						;
+		mov	(SP)+, R0		;
+		mov	(SP)+, R1		;
+		rts	PC			;
+						;
+1$:		.byte	077, 006, 133, 117	;
+		.byte	146, 155, 175, 007	;
+		.byte	177, 157, 167, 174	;
+		.byte	071, 136, 171, 161	;
+						;
+;_____________________________________________________________________________
+;
+trap4:		rti
+		nop
+
+entry:		mov	#$stack, SP		;
+		mov	#hang, @#2		;
+		mov	#0, @#HPAR2		;
+		halt				;
+		nop
+		wait	
+
+hang:		mov	@#000000, R0		;
+		mov	@#040000, R1
+		mov	@#100000, R2
+		mov	@#140000, R3
+		br	hang
+
+						;
+;entry: 		mov	#next, @#2	;
+;		mov	#400, SP		;
+;		call	L1			;
+;L1:  		nop				;
+;		nop				;
+;		mov	#364, SP		;
+;		call	L2			;
+;L2:		nop				;
+;		nop				;
+;		mov	#200, SP		;
+;		nop				;
+;		nop				;
+;		nop				;
+;		nop				;
+;		call	L3			;
+;L3:		nop				;
+;		nop				;
+;		mov	#2, SP			;
+;		call	next			;
+;Next:		nop
+;		nop
+;		wait
+;		br	.
+ ;
+;		mov	#2222, SP 		;
+;		mfpi	SP			; Какой SP запишется при MMU16 ?
+;		halt				; Установить HALT-моду
+;		wait				;
+;						;
+;hang:		mov	#next1, R4		;
+;		jmp	@#t112			;
+;						;
+;next1:		mfpi	SP			; Куда запишется KSP при HSP = 000000 ?
+;		wait				;
+;
+;		mov     #140340, @#PSW		; Установить USER-моду
+;		mov     #stop, SP		; Стек USER-моды
+;		mov     #340, @#PSW		; Установить KERNEL-моду
+;		mov	#stopk, SP		; Стек KERNEL-моды
+;		halt				; Установить HALT-моду
+;						;
+;stopk:		wait				;
+;						;
+;hang: 		
+;		tst	@#040000		;
+;		tst	@#060000		;
+;
+;		mfpi	(PC)+			; Запись следующего слова в стек
+;		.word	340			;
+;		mfpd	SP			; Запись USP в стек
+;		rti				; Выход из HALT-моды на метку Stop
+;		nop				;
+;stop:		wait				;
+						;
+;hang:		tst	@#20006			;
+;		tst	@#157560		;
+;		mov	#ret4, @#17776		;
+;		mov	#stop, @#20000		;
+;		mov	#340,  @#20002  	;
+;		mfpi	(PC)+			; Запись следующего слова в стек
+;		.word	ret2			;
+;		mfpd	(PC)+			; Запись следующего слова в стек
+;		.word	ret1			;
+;		return				; Возврат на Ret1
+;Ret1:		return				; Возврат на Ret2
+;Ret2:		return				; Возврат на Ret3
+;Ret4:		rti				; Выход из HALT-моды на метку Stop
+
+
+;L1:	
+;		mov	SP, (R1)
+;		rts	SP
+;		iot
+;		emt	0
+;		trap	0
+;		bpt
+;		jsr	SP, L1
+;		jmp	R0
+;		mfpt				; R0 - proc type
+;		mov	R0, (R1)
+;
+;
+;		clr	@#177776
+;		bis	#100, @#177564
+;		wait
+;
+;		mov	#Next20, R5
+;		mark	0
+;		nop
+;Next20:         call	Next30			; Проверить HSP
+;Next30:		mov	SP, (PC)+		; Проверить SP
+;		nop
+;		wait
+;
+;		inc	PC
+;		tst	@#1
+;		nop
+;		nop
+;		wait
+;		nop
+;		Br	.-2.
+;
+;		mov	#2, R1			;
+;		mov	#177776, R2		; Адрес PSW
+;						;
+;		mov     #140340, (R2)		; Установить USER-моду
+;		mov     #4444, SP		; Стек USER-моды
+;		mov     #340, (R2)		; Установить KERNEL-моду
+;		mov     #2222, SP		; Стек KERNEL-моды
+;		mov	#next, (R1)		;
+;		halt				; Установить HALT-моду
+;						;
+;next: 		mov	(R2), (R1)		; Прочитать PSW
+;		call	Next2			; Где сохранит PC ?
+;next2:		mov	SP, (R1)		; Какой стек ?
+;		mov	(SP), (R1)		; Откуда прочитает ?
+;		mov     #140340, (R2)		; Выбрать стек USER
+;		mov	SP, (R1)		; Какой стек ?
+;		mov     #340, (R2)		; Выбрать стек KERNEL
+;		mov	SP, (R1)		; Какой стек ?
+;		br	.-2.			;
+;
+;		mov	#2, R1			;	
+;		mov	#177776, R2		; Адрес PSW
+;		mov	#140340, (R2)		; Установить USER-моду
+;		mov	SP, (R1)		; Какой стек ?
+;		mov     #4444, SP		; Стек USER-моды
+;		mov     #340, (R2)		; Установить KERNEL-моду
+;		mov	SP, (R1)		; Какой стек ?
+;		mov     #2222, SP		; Стек KERNEL-моды
+;		mov	#ehalt, (R1)		;
+;		halt				; Установить HALT-моду
+;						;
+;ehalt:		mov	R0, -(SP)		;
+;		halt				;
+;		tst	(R2)			; Прочитать PSW
+;		mov	SP, (R1)		; Какой стек ?
+;		mov     #140340, (R2)		; Выбрать стек USER
+;		mov	SP, (R1)		; Какой стек ?
+;		mov     #340, (R2)		; Выбрать стек KERNEL
+;		mov	SP, (R1)		; Какой стек ?
+;
+;		mov	#177600, @#172512	; PARH2 -> IO Page
+;		tst	@#100000		; Чтение 17760000 вызовет зависание
+;		nop				;
+;		br	.			;
+;
+;		mov	#340, R0		;
+;		mtps	R0			;
+;		nop				;
+;		br	entry			;
+
+		mov	#$stack, SP		;
+		mov	#$rxbuf, $rxend		;
+		mov	#$rxbuf, $rxbeg		;
+		mov	#$txbuf, $txend		;
+		mov	#$txbuf, $txbeg		;
+						;
+		mov	#14001, R0		; '1801' logo
+		jsr	PC, outhex		;
+						;
+		mov	#100, @#RXCSR		;
+		mov     #000, @#TXCSR		;
+		clr	R0			;
+		mtps	R0			;
+						;
+;_____________________________________________________________________________
+;
+start:		.print	#mes1			;
+						;
+1$:		jsr	PC, getch		;
+		cmp	R0, #'0			;
+		bne	2$			;
+		jsr	PC, spigot		;
+		br	1$			;
+2$:		cmp	R0, #'1			;
+		bne	3$			;
+		jsr	PC, test50		;
+		br	1$			;
+3$:		cmp	R0, #'2			;
+		bne	4$			;
+		jsr	PC, test4t		;
+		br	1$			;
+4$:		cmp	R0, #'3			;
+		bne	5$			;
+		jsr	PC, scan17		;
+		br	1$			;
+5$:		cmp	R0, #'4			;
+		bne	6$			;
+		jsr	PC, scanpc		;
+		br	1$			;
+6$:		jsr	PC, putch		;
+		br	1$			;
+;_____________________________________________________________________________
+;
+scanpc:		.print	#mes11			;
+1$:		jsr	PC, inkey		;
+		bcs	2$			;
+		cmp	R0, #27.		;
+		bne	2$			;
+		.print	#eol			;
+		rts	PC			;
+						;
+2$:		clr	R0			;
+		mov	#255., R1		;
+;		nop				;
+;		mov	R0, (PC)+		;
+;		nop				;
+;		mov	R1, (PC)+		;
+;		nop				;
+;		mov	R2, (PC)+		;
+;		nop				;
+;		mov	R3, (PC)+		;
+;		nop				;
+;		mov	R4, (PC)+		;
+;		nop				;
+;		mov	R5, (PC)+		;
+;		nop				;
+;		mov	SP, (PC)+		;
+;		nop				;
+	
+3$:		nop				;
+		nop				;
+		swab	R0			;
+		nop				;
+		tst	R0			;
+		nop				;
+		nop				;
+		tst	(R0)			;
+		nop				;
+		nop				;
+		nop				;
+		sob	R1,3$			;
+		br	1$			;
+;_____________________________________________________________________________
+;
+scan17:		.print	#mes10			;
+		mov	#hang17, @#4		;
+		mov	#340, @#6		;
+						;		
+		jsr	PC, flush		;
+		mov	#170000, R2		;
+1$:		.print	#eol			;
+		mov	R2, R0			;
+		jsr	PC, print7		;
+		jsr	PC, flush		;
+		jsr	PC, 3$			;
+		inc	R2			;
+		beq	2$			;
+		inc	R2			;
+		bne	1$			;
+2$:		rts	PC			;
+						;
+3$:		mov	#0, $hangf		;
+		mov	@R2, R1			;
+		tst	$hangf			;
+		bne	4$			;
+		mov	#'/,R0			;
+		jsr	PC, putch		;
+		mov	R1, R0			;
+		jsr	PC, print7		;
+4$:		rts	PC			;
+						;
+hang17:		inc	$hangf			;
+		rti				;
+;_____________________________________________________________________________
+;
+test4t:		.print	#mes5			;
+1$:		mov	R0, R1			;
+                mov	R0, R1			;
+		mov	R0, R1			;
+		mov	R0, R1			;
+		mov	R0, R1			;
+		mov	R0, R1			;
+		mov	R0, R1			;
+		mov	R0, R1			;
+		mov	R0, R1			;
+		mov	R0, R1			;
+		jsr	PC, inkey		;
+		bcs	1$			;
+		cmp	R0, #27.		;
+		bne	1$			;
+		rts	PC			;
+;_____________________________________________________________________________
+;
+test50:		.print	#eol			;
+		mov	$ticks, R1		;
+		dec	R1			;
+1$:		jsr	PC, inkey		;
+		bcs	2$			;
+		cmp	R0, #27.		;
+		bne	2$			;
+		.print	#eol			;
+		rts	PC			;
+						;
+2$:		mov	#4$, R3			;
+		mov	#100., R2		;
+3$:		mov	(R3), R0		;
+		sob	R2, 3$			;
+						;
+		mov	$ticks, R0		;
+		cmp	R0, R1			;
+		beq	1$			;
+		mov	R0, R1			;
+		jsr	PC, print5		;
+		br	1$			;
+						;
+4$:		.word	177777			;
+;_____________________________________________________________________________
+;
+; PI calculation test
+; It calculates pi-number using the next C-algorithm
+; https://crypto.stanford.edu/pbc/notes/pi/code.html
+;
+; #include <stdio.h>
+; #define N 2800
+; main() {
+;   long r[N + 1], i, k, b, c;
+;   c = 0;
+;   for (i = 0; i < N; i++)
+;      r[i] = 2000;
+;   for (k = N; k > 0; k -= 14) {
+;      d = 0;
+;      i = k;
+;      for(;;) {
+;         d += r[i]*10000;
+;         b = i*2 - 1;
+;         r[i] = d % b;
+;         d /= b;
+;         i--;
+;         if (i == 0) break;
+;         d *= i;
+;      }
+;      printf("%.4d", (int)(c + d/10000));
+;      c = d % 10000;
+;   }
+; }
+;
+; the time of the calculation is quadratic, so if T is time to calculate N digits
+; then 4*T is required to calculate 2*N digits
+;_____________________________________________________________________________
+;
+		.radix	10.			;
+		.macro	mul32x16 ?l1 ?l2	; R3:R1*R2  -> R4:R0
+.if ne HMUL					;
+     		mul	R2, R3			;
+		mov	R1, R0			;
+		mul	R2, R0			;
+		bpl 	l1			;
+						;
+		add 	R2, R0			;
+l1:  		add 	R3, R0 			;
+		mov 	R0, R4			;
+		mov 	R1, R0			;
+.iff						;
+		clr	R0			;
+		clr 	R4			;
+		ror 	R2			;
+		bcc 	l1			;
+						;
+		mov 	R1, R0			;
+		mov 	R3, R4			;
+l1:		asl	R1 			;
+		rol	R3			;
+		asr	R2			;
+		bcc 	l2			;
+						;
+		add	R1, R0			;
+		adc	R4			;
+		add	R3, R4			;
+		tst	R2			;
+l2:		bne	l1			;
+.endc						;
+	      .endm				;
+						;
+						;
+		.macro	mul16x16 ?l1 ?l2  	; R1*R2  -> R4:R0, R3 is used
+.if ne HMUL					;
+  		mul	R1, R2			;
+		mov	R2, R4			;
+		mov	R3, R0			;
+.iff						;
+		clr	R3			;
+		mul32x16			;
+.endc						;
+		.endm				;
+						;
+;_____________________________________________________________________________
+;
+		.macro 	div0 	?l0		;
+		asl	R2			;
+		rol	R3			;
+		cmp	R3, R1			;
+		bcs 	l0			;
+						;
+		sub	R1, R3			;
+		inc	R2			;
+l0:						;
+		.endm				;
+						; R1:R2 = R3:R2/R1, R3 = R3:R2%R1, used: R0,R4
+		.macro div32x16 ?div32 ?exit ?l1 ?l2
+						; may work wrong if R1>$7fff
+.if ne HDIV					;
+		mov	R3, R4			;
+		inc	R4			;
+		asl 	R4 			; this division implementation is limited 
+		cmp	R4, R1			;
+		bcc 	div32			; may work wrong if R1>$3fff or R3>$7fff
+						;
+		mov 	R2, R4			;
+		mov 	R3, R2			;
+		mov	R4, R3			;
+		div 	R1, R2			;
+l1: 		clr 	R1			;
+    		br 	exit			;
+						;
+div32:						;
+		mov 	R2, R4			;
+		clr	R2			;
+		div 	R1, R2			;
+						;
+		asl 	R1			;
+		mov 	R2, R0			;
+		mov 	R3, R2			;
+		mov 	R4, R3			;
+		div 	R1, R2			;
+						;
+		asl	R2			;
+		asr 	R1			;
+		cmp 	R3, R1			;
+		bcs 	l2			;
+						;
+		inc	R2			;
+		sub 	R1, R3			;
+l2:  		mov 	R0, R1			;
+						;
+.iff						;
+		cmp	R3, R1			;
+		bcc 	div32			;
+						;
+		.rept 	16.			;
+		div0				;
+		.endm				;
+		clr	R1			;
+		jmp 	@#exit			;
+		        			;
+div32:		mov	R2, R0			;
+						;
+		.rept 	OPT			;
+		asl	R3			;
+		.endm				;
+		mov	R3, R2			;
+		clr	R3			;
+						;
+		.rept 	16.-OPT			;
+		div0				;
+		.endm				;
+						;
+		mov	R2, R4			;
+		mov	R0, R2			;
+						;
+		.rept 	16.			;
+		div0				;
+		.endm				;
+		mov	R4,R1			;
+		.endc				;
+exit:						;
+		.endm				;
+;_____________________________________________________________________________
+;
+div32x16s: 	cmp	R3, R1			; R1:R2 = R3:R2/R1, R3 = R3:R2%R1, used: R0,R4
+		bcc	32$		 	; compact form - 64 bytes
+				    		; may work wrong if R1>$7fff
+		jsr	PC, 3$			;
+		clr	R1			;
+		rts	PC			;
+						;
+32$: 		mov	R2, R0			;
+		mov 	R3, R2			;
+		clr	R3			;
+		jsr	PC, 3$			;
+		mov	R2, R4			;
+		mov	R0, R2			;
+		jsr	PC, 3$			;
+		mov	R4, R1			;
+		rts	PC			;
+						;
+3$:		jsr	PC, @#.+4		;
+		jsr	PC, @#.+4		;
+		jsr	PC, @#.+4		;
+		jsr	PC, @#.+4		;
+		asl	R2			;
+		rol	R3			;
+		cmp	R3, R1			;
+		bcs	20$			;
+		sub	R1, R3			;
+		inc	R2			;
+20$: 		rts	PC			;
+;_____________________________________________________________________________
+;
+spigot:         .print	#mes2			;
+		call 	getnum			; R0 - entered number
+	        add	#3, R0			;
+		bic 	#3, R0			;
+		cmp	R0, #0			;
+		bne	71$			;
+		mov	#MAXD, R0		;
+71$:		cmp	R0, #MAXD		;
+		blos	72$			;
+		mov	#MAXD, R0		;
+						;
+72$:		mov	R0, R4			;
+        	.print 	#mes3			;
+		mov	R4, R0			;
+		call 	print4			;
+		.print	#eol			;
+		.print	#eol			;
+						;
+		asr	R4			;
+         	mov 	R4, R0			;
+		asl 	R0			;
+		add 	R0, R4			;
+		asl	R0			;
+		add 	R0, R4 			; R4 <- R4/2*7
+		mov 	R4, 101$+2		; replace N in opcode
+		inc	R4			;
+		mov 	R4, 100$+2            	; replace N in opcode
+						;
+		mov	$ticks, $stime		;
+100$:    	mov 	#MAXD+1, R0   		; fill r-array
+	        mov	#2000., R1		;
+         	mov 	#ra, R2			;
+1$:		mov 	R1, (R2)+		;
+		sob 	R0, 1$			;
+						;
+	        clr 	cv			;
+101$:    	mov 	#MAXD, kv		; MAXD replaced by actual N
+						;
+20$:      	clr	dv 			; d <- 0
+	 	clr	dv+2			;
+		mov	kv, iv			; i <-k
+						;
+2$:		mov 	iv, R0			;
+		asl	R0			;
+		mov	R0, R5			;
+		add 	#ra, R0			;
+		mov	R0, -(SP)		; 
+						;
+		mov 	@R0, R1     		; r[i]
+		mov 	#10000., R2  		; r[i]*10000, mul16x16
+	        mul16x16			;
+		add 	dv, R0			;
+		adc 	R4			;
+		add 	dv+2, R4		;
+						;
+		dec	R5 			; b <- 2*i-1
+	 	mov	R5, R1			;
+		mov	R4, R3			;
+		mov	R0, R2			;
+		div32x16			;
+		mov	R3, @(SP)+   		; r[i] <- d%b
+		mov 	R2, dv 			; d <- d/b
+		mov 	R1, dv+2		;
+	        dec	iv 			; i <- i - 1
+	        beq 4$				;
+						;
+		mov 	R1, R3			;
+		mov 	R2, R1			;
+		mov 	iv, R2			;
+		mul32x16			;
+		mov 	R0, dv 			; d <- d*i
+	        mov	R4, dv+2 		;
+	        jmp 	2$			;
+						;
+4$:      	mov	R1, R3			;
+		mov	#10000., R1		;
+		jsr	PC, div32x16s		;
+		add 	cv, R2  		; c + d/10000
+		mov 	R3, cv 			; c <- d%10000
+						;
+ 	 	mov 	R2, R0			;
+		jsr	PC, print4		;
+	        sub 	#14., kv 		; k <- k - 14
+	        beq 	5$			;
+	        jmp 	20$			;
+						;
+5$:	  	mov	$ticks, R2		;
+		sub	$stime, R2		;
+		.print	#mes4			;
+		mov	R2, R0			;
+		jsr	PC, print5		;
+		jsr	PC, flush		;
+		rts	PC			;
+;_____________________________________________________________________________
+;
+		.radix	8.			;
+						;
+print4:		mov	R3, -(SP)		;
+		mov	R2, -(SP)		;
+		mov	R0, R2			;
+						;
+		mov 	#1000., R3		;
+		jsr	PC, 1$			;
+	        mov	#100., R3		;
+		jsr	PC, 1$			;
+		mov	#10., R3		;
+		jsr	PC, 1$			;
+		mov 	R2, R0			;
+		jsr	PC, 3$			;
+						;
+		mov	(SP)+, R2		;
+		mov	(SP)+, R3		;
+		rts	PC			;
+						;
+1$:		mov	#-1, R0			;
+2$:		inc 	R0			;
+		sub 	R3, R2			;
+		bcc 	2$			;
+		add	R3, R2			;
+3$:		add 	#'0, R0			;
+   		jmp	putch			;
+;_____________________________________________________________________________
+;
+print5:		mov	R3, -(SP)		;
+		mov	R2, -(SP)		;
+		mov	R0, R2			;
+						;
+		mov 	#10000., R3		;
+		jsr	PC, 1$			;
+		mov 	#1000., R3		;
+		jsr	PC, 1$			;
+	        mov	#100., R3		;
+		jsr	PC, 1$			;
+		mov	#10., R3		;
+		jsr	PC, 1$			;
+		mov 	R2, R0			;
+		jsr	PC, 3$			;
+						;
+		mov	(SP)+, R2		;
+		mov	(SP)+, R3		;
+		rts	PC			;
+						;
+1$:		mov	#-1, R0			;
+2$:		inc 	R0			;
+		sub 	R3, R2			;
+		bcc 	2$			;
+		add	R3, R2			;
+3$:		add 	#'0, R0			;
+   		jmp	putch			;
+;_____________________________________________________________________________
+;
+print7:		mov	R1, -(SP)		;
+		mov	R0, R1			;
+		rol	R0			;
+		rol	R0			;
+		bic	#177776, R0		;
+		add	#'0, R0			;
+		jsr	PC, putch		;
+		rol	R1			;
+		jsr	PC, 1$			;
+		jsr	PC, 1$			;
+		jsr	PC, 1$			;
+		jsr	PC, 1$			;
+		jsr	PC, 1$			;
+		mov	(SP)+, R1		;
+		rts	PC			;
+						;
+1$:		rol	R1			;
+		rol	R0			;
+		rol	R1			;
+		rol	R0			;
+		rol	R1			;
+		rol	R0			;
+		bic	#177770, R0		;
+		add	#'0, R0			;
+		jmp	putch			;
+;_____________________________________________________________________________
+;
+getnum:		mov	R3, -(SP)		;
+		mov	R2, -(SP)		;
+		mov	R1, -(SP)		;
+		clr	R1 	   		; length
+	        clr	R2			; number
+						;
+1$: 	   	jsr	PC, getch		;
+		cmp	#13., R0		;
+	        beq	3$			;
+						;
+        	cmp 	R0, #8.			; backspace
+	        beq 	2$			;
+						;
+		cmp 	R0, #'0			;
+	        blo	1$			;
+	        cmp 	R0, #'9			;
+	        bhi	1$			;
+		cmp 	R1, #4			;
+		bhis	1$			;
+						;
+		mov	R2, -(SP)		;
+		inc 	R1			;
+		jsr	PC, putch		;
+		sub	#'0, R0			;
+		mov	R2, R3			;
+		asl 	R3			;
+	        asl	R3			;
+	        add 	R3, R2			;
+		asl 	R2			;
+		add 	R0, R2			;
+	        br	1$			;
+						;
+2$:     	tst	R1			;
+		beq 	1$			;
+        	dec 	R1			;
+		.print 	#del			;
+	 	mov 	(SP)+, R2		;
+		br	1$			;
+						;
+3$:	        asl	R1			;
+		add	R1, SP			;
+		mov	R2, R0			;
+		mov	(SP)+, R1		;
+		mov	(SP)+, R2		;
+		mov	(SP)+, R3		;
+		rts	PC			;
+;_____________________________________________________________________________
+;
+$stime: 	.word	0, 0 			;
+cv:		.word 	0			;
+dv:		.word 	0, 0			;
+iv:		.word 	0			;
+kv: 		.word 	0			;
+ra: 		.blkw 	MAXD/2*7+1		;
+;_____________________________________________________________________________
+;
+del: 		.asciz	<10><40><10>
+eol: 		.asciz	<15><12>
+mes1:		.asciz	<15><12>"Press zero to start PI calculation.."<12><15>
+mes2:		.asciz	<15><12>"Enter the number of PI-digits fo calculate: "
+mes3: 		.asciz	<15><12>"PI digits will be printed: "
+mes4: 		.asciz	<15><12>"System ticks (50Hz) elapsed: "
+mes5: 		.asciz	<15><12>"Test4t started.."
+mes10: 		.asciz	<15><12>"Scanning system registers"
+mes11: 		.asciz	<15><12>"Test mov Rx, (PC)+"
+		.even				;
+;_____________________________________________________________________________
+;
+		.rept	100			;
+		.word	0			;
+		.endr				;
+$stack		=.				;
+						;
+;_____________________________________________________________________________
+;
+		.even				;
+
+		.end
+
+

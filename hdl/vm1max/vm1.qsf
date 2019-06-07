@@ -1,0 +1,138 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2012 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 64-Bit
+# Version 12.1 Build 177 11/07/2012 SJ Full Version
+# Date created = 21:12:33  August 12, 2013
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		vm1_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY MAX3000A
+set_global_assignment -name DEVICE "EPM3064ATC100-10"
+set_global_assignment -name TOP_LEVEL_ENTITY vm1_top
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 12.1
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "21:12:33  AUGUST 12, 2013"
+set_global_assignment -name LAST_QUARTUS_VERSION "12.1 SP1"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name DEVICE_FILTER_PACKAGE TQFP
+set_global_assignment -name DEVICE_FILTER_PIN_COUNT 100
+set_global_assignment -name DEVICE_FILTER_SPEED_GRADE 10
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR "-1"
+set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (Verilog)"
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
+set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS OFF
+set_global_assignment -name EDA_TIME_SCALE "1 ns" -section_id eda_simulation
+set_global_assignment -name OPTIMIZE_HOLD_TIMING OFF
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING OFF
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+
+set_location_assignment PIN_6 -to nMDCLO
+set_location_assignment PIN_8 -to nMACLO
+set_location_assignment PIN_9 -to nMSACK
+set_location_assignment PIN_10 -to nMDMR
+set_location_assignment PIN_12 -to nMIRQ[1]
+set_location_assignment PIN_13 -to nMIRQ[2]
+set_location_assignment PIN_14 -to nMIRQ[3]
+set_location_assignment PIN_16 -to nMVIRQ
+set_location_assignment PIN_17 -to nMBSY
+set_location_assignment PIN_19 -to nMRPLY
+set_location_assignment PIN_20 -to nMSYNC
+set_location_assignment PIN_21 -to nMDIN
+set_location_assignment PIN_23 -to nMDOUT
+set_location_assignment PIN_25 -to nMWTBT
+set_location_assignment PIN_31 -to nCFG[0]
+set_location_assignment PIN_32 -to nMINIT
+set_location_assignment PIN_35 -to nCFG[1]
+set_location_assignment PIN_37 -to nCFG[2]
+set_location_assignment PIN_40 -to nCFG[3]
+set_location_assignment PIN_41 -to nIRQ_SLAVE[1]
+set_location_assignment PIN_42 -to nIRQ_SLAVE[2]
+set_location_assignment PIN_44 -to nSEL_SLAVE[1]
+set_location_assignment PIN_45 -to nIRQ_SLAVE[3]
+set_location_assignment PIN_46 -to nVIRQ_SLAVE
+set_location_assignment PIN_47 -to nIAKO_SLAVE
+set_location_assignment PIN_48 -to nSEL_SLAVE[2]
+set_location_assignment PIN_52 -to nDMGO_SLAVE
+set_location_assignment PIN_54 -to nDMGI_SLAVE
+set_location_assignment PIN_57 -to nSACK
+set_location_assignment PIN_58 -to nBSY
+set_location_assignment PIN_60 -to nDCLO
+set_location_assignment PIN_61 -to nACLO
+set_location_assignment PIN_63 -to nIRQ_MASTER[1]
+set_location_assignment PIN_64 -to nIRQ_MASTER[2]
+set_location_assignment PIN_67 -to nIRQ_MASTER[3]
+set_location_assignment PIN_69 -to nVIRQ_MASTER
+set_location_assignment PIN_71 -to nIAKO_MASTER
+set_location_assignment PIN_75 -to nDOUT
+set_location_assignment PIN_76 -to nDIN
+set_location_assignment PIN_80 -to nRPLY
+set_location_assignment PIN_81 -to nWTBT
+set_location_assignment PIN_83 -to nSYNC
+set_location_assignment PIN_84 -to nSEL_MASTER[1]
+set_location_assignment PIN_85 -to nSEL_MASTER[2]
+set_location_assignment PIN_87 -to CLK
+set_location_assignment PIN_92 -to nDMR
+set_location_assignment PIN_93 -to nDMGO_MASTER
+set_location_assignment PIN_94 -to CLK_MASTER
+set_location_assignment PIN_96 -to nBHE
+set_location_assignment PIN_97 -to nBLE
+set_location_assignment PIN_98 -to nMIAKO
+set_location_assignment PIN_99 -to nMDMGO
+set_location_assignment PIN_100 -to nMDIR
+
+
+set_global_assignment -name SAVE_DISK_SPACE OFF
+set_global_assignment -name USE_CONFIGURATION_DEVICE ON
+set_global_assignment -name MAX7000_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_location_assignment PIN_56 -to CLK_SLAVE
+set_location_assignment PIN_68 -to nINIT
+set_location_assignment PIN_29 -to nMRSV[0]
+set_location_assignment PIN_30 -to nMRSV[1]
+set_global_assignment -name VERILOG_FILE vm1_tb.v
+set_global_assignment -name VERILOG_FILE vm1_top.v
+set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
+set_global_assignment -name FLOW_ENABLE_RTL_VIEWER OFF
+set_global_assignment -name VERILOG_INPUT_VERSION VERILOG_2001
+set_global_assignment -name EDA_RUN_TOOL_AUTOMATICALLY OFF -section_id eda_simulation
+set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
+set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH vm1_tb -section_id eda_simulation
+set_global_assignment -name EDA_TEST_BENCH_NAME vm1_tb -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id vm1_tb
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME vm1_tb -section_id vm1_tb
+set_global_assignment -name FLOW_ENABLE_IO_ASSIGNMENT_ANALYSIS OFF
+set_global_assignment -name EDA_NETLIST_WRITER_OUTPUT_DIR simulation/ -section_id eda_simulation
+set_global_assignment -name EDA_TEST_BENCH_FILE vm1_tb.v -section_id vm1_tb
+set_instance_assignment -name SLOW_SLEW_RATE ON -to nIRQ_*
+set_instance_assignment -name SLOW_SLEW_RATE ON -to nMDMGO
+set_instance_assignment -name SLOW_SLEW_RATE ON -to nACLO
+set_instance_assignment -name SLOW_SLEW_RATE ON -to nDCLO
+set_instance_assignment -name SLOW_SLEW_RATE ON -to nMINIT

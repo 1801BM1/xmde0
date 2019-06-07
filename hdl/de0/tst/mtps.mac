@@ -1,0 +1,490 @@
+;_____________________________________________________________________________
+;
+; Pi test configuration values
+;
+	VM	= 3		; VM1/VM2/VM3 selection
+	HMUL	= 1  		; hardware multiplication, 0 - no
+	HDIV 	= 1  		; hardware division, 0 - no
+	OPT 	= 3.		; use 3 if N<=14000, limits R3 to 0x1f'ff'ff'ff
+	MAXD 	= 1050.		; maximal digits (memory limited)
+;_____________________________________________________________________________
+;
+		.title	t404            	; тест прерываний
+		.list	meb			;
+						;
+		R0	= %0			;
+		R1	= %1			;
+		R2	= %2			;
+		R3	= %3			;
+		R4	= %4			;
+		R5	= %5			;
+		R6	= %6			;
+		R7	= %7			;
+		SP	= %6			;
+		PC	= %7			;
+						;
+		KPDR0	= 172300		; Kernel PDR0
+		KPDR1	= 172302		; Kernel PDR1
+		KPDR2	= 172304		; Kernel PDR2
+		KPDR3	= 172306		; Kernel PDR3
+		KPDR4	= 172310		; Kernel PDR4
+		KPDR5	= 172312		; Kernel PDR5
+		KPDR6	= 172314		; Kernel PDR6
+		KPDR7	= 172316		; Kernel PDR7
+						;					
+		KPAR0	= 172340		; Kernel PAR0
+		KPAR1	= 172342		; Kernel PAR1
+		KPAR2	= 172344		; Kernel PAR2
+		KPAR3	= 172346		; Kernel PAR3
+		KPAR4	= 172350		; Kernel PAR4
+		KPAR5	= 172352		; Kernel PAR5
+		KPAR6	= 172354		; Kernel PAR6
+		KPAR7	= 172356		; Kernel PAR7
+						;					
+		HPAR2	= 172512		; Halt PAR2
+		SR3	= 172516		; MMU Status 3
+		SR0	= 177572		; MMU Status 0
+		SR1	= 177574		; MMU Status 1
+		SR2	= 177576		; MMU Status 2
+					        ;
+		UPDR0	= 177600		; User PDR0
+		UPDR1	= 177602		; User PDR1
+		UPDR2	= 177604		; User PDR2
+		UPDR3	= 177606		; User PDR3
+		UPDR4	= 177610		; User PDR4
+		UPDR5	= 177612		; User PDR5
+		UPDR6	= 177614		; User PDR6
+		UPDR7	= 177616		; User PDR7
+						;				
+		UPAR0	= 177640		; User PAR0
+		UPAR1	= 177642		; User PAR1
+		UPAR2	= 177644		; User PAR2
+		UPAR3	= 177646		; User PAR3
+		UPAR4	= 177650		; User PAR4
+		UPAR5	= 177652		; User PAR5
+		UPAR6	= 177654		; User PAR6
+		UPAR7	= 177656		; User PAR7
+						;
+		PSW	= 177776		;
+						;
+						;
+		VELIM	= 177706		;
+		VECNT	= 177710		;
+		VECSR	= 177712		;
+						;
+		RXCSR	= 177560		;
+		RXDAT	= 177562		;
+		TXCSR	= 177564		;
+		TXDAT	= 177566		;
+						;
+		TXSIZE	= 128.			;
+		RXSIZE	= 16.			;
+;_____________________________________________________________________________
+;
+		.macro	.print	ARG		;
+		mov	R0,-(SP)		;
+		mov	ARG, R0			;
+		jsr	PC, print		;
+		mov	(SP)+,R0		;
+		.endm				;
+						;
+;_____________________________________________________________________________
+;
+		.macro	vect, offset, adr, val	;
+		. 	= offset		;
+.if 	nb, <adr>				;
+		.word	adr			;
+.iff						;
+		.word	.+2			;
+.endc 						;
+.if	nb, <val>				;
+		.word	val			;
+.iff            				;
+.if 	nb, <adr>				;
+		.word	340			;
+.iff						;
+		.word	0			;
+.endc						;
+.endc						;
+		.endm				;
+;_____________________________________________________________________________
+;
+		.asect      			; ловушка прерываний 0-376
+		. = 0				;
+						;
+;		vect	0			;
+.if	eq, <VM-1>				;
+		jmp	@#entry			; инструкция перехода 1801ВМ1
+.endc						;
+.if 	eq, <VM-2>				;
+		.word	entry, 340		; вектор старта 1801ВМ2
+.endc						;
+.if 	eq  <VM-3>				;
+		jmp	@#entry			; инструкция перехода 1801ВМ3
+.endc						; адрес переотбражен с 173000
+;_____________________________________________________________________________
+;
+		vect	4 			;
+		vect	10			;
+		vect	14			;
+		vect	20			;
+		vect	24, entry		; VM3 entry vector
+		vect	30			;
+		vect	34			;
+		vect	40			;
+		vect	44			;
+		vect	50			;
+		vect	54			;
+		vect	60, isrrx		; rx console
+		vect	64, isrtx		; tx console
+		vect	70			;
+		vect	74			;
+		vect	100, isr50		;
+		vect	104			;
+		vect	110			;
+		vect	114			;
+		vect	120			;
+		vect	124			;
+		vect	130			;
+		vect	134			;
+		vect	140			;
+		vect	144			;
+		vect	150			;
+		vect	154			;
+		vect	160			;
+		vect	164			;
+		vect	170			;
+		vect	174			;
+		vect	200			;
+		vect	204			;
+		vect	210			;
+		vect	214			;
+		vect	220			;
+		vect	224			;
+		vect	230			;
+		vect	234			;
+		vect	240			;
+		vect	244			;
+		vect	250			;
+		vect	254			;
+		vect	260			;
+		vect	264			;
+		vect	270			;
+		vect	274			;
+		vect	300			;
+		vect	304			;
+		vect	310			;
+		vect	314			;
+		vect	320			;
+		vect	324			;
+		vect	330			;
+		vect	334			;
+		vect	340			;
+		vect	344			;
+		vect	350			;
+		vect	354			;
+		vect	360			;
+		vect	364			;
+		vect	370			;
+		vect	374			;
+;_____________________________________________________________________________
+;
+$hangf:		.word	0			;
+$ticks:		.word	0, 0			;
+						;
+$txbeg:		.word	0			;
+$txend:		.word	0			;
+$txbuf:		.blkb	TXSIZE			;
+		.even				;
+		         			;
+$rxbeg:		.word	0			;
+$rxend:		.word	0			;
+$rxbuf:		.blkb	RXSIZE			;
+		.even				;
+;_____________________________________________________________________________
+;
+isr50:		inc	$ticks			; 32-bit ticks counter
+		beq	1$			;	
+.if	eq, <VM-1>				;
+;		mov	R0, -(SP)		;
+;		mov	R1, -(SP)		;
+;		mov	#VELIM, R1		;
+;		mov	@R1, R0			;
+;		nop				;
+;		mov	R0, @R1			;
+;		nop				;
+;		inc	@R1			;
+;		nop				;
+;		mov	(SP)+, R1		;
+;		mov	(SP)+, R0		;
+.endc						;
+						;
+		rti				;
+1$:		inc	$ticks+2		;
+		rti				;
+						;
+;_____________________________________________________________________________
+;
+isrrx:		mov	R0, -(SP)		;
+		mov	$rxbeg, R0		;
+		movb	@#RXDAT, (R0)+		;
+		cmp	R0, #$rxbuf+RXSIZE	;
+		blo	1$			;
+		mov	#$rxbuf, R0		;
+1$:		mov	R0, $rxbeg		;
+		mov	(SP)+, R0		;
+		rti				;
+						;
+inkey:		mov	R1, -(SP)		;
+		mov	$rxend, R1		;
+		mov	$rxbeg, R0		;
+		sub	R1, R0			;
+		bne	1$			;
+		mov	(SP)+, R1		;
+		sec				;
+		rts	PC			;
+		             			;
+1$:		movb	(R1)+, R0		;
+		cmp	R1, #$rxbuf+RXSIZE	;
+		blo	2$			;
+		mov	#$rxbuf, R1		;
+2$:		mov	R1, $rxend		;
+		mov	(SP)+, R1		;
+		clc				;
+		rts	PC			;	
+						;
+getch:		jsr	PC, inkey		;
+		bcs	getch			;
+		rts	PC			;	
+						;
+;_____________________________________________________________________________
+;
+isrtx:		mov	R0, -(SP)		;
+		mov	$txend, R0		;
+		cmp	R0, $txbeg		;
+		bne	1$			;
+		bic	#100, @#TXCSR		;
+		mov	(SP)+, R0		;
+		rti				;
+						;
+1$:		movb	(R0)+, @#TXDAT		;
+		cmp	R0, #$txbuf+TXSIZE	;
+		blo	2$			;
+		mov	#$txbuf, R0		;
+2$:		mov	R0, $txend		;
+		mov	(SP)+, R0		;
+		rti				;
+						;		
+putch:						;
+		tstb	@#TXCSR			;
+		bpl	putch			;
+		movb	R0, @#TXDAT		;
+		rts	PC			;
+;						;
+		mov	R1, -(SP)		;
+		mov	$txbeg, R1		;
+		movb	R0, (R1)+		;
+		cmp	R1, #$txbuf+TXSIZE	;
+		blo	1$			;
+		mov	#$txbuf, R1		;
+1$:		cmp	R1, $txend		;
+		beq	1$			;
+		mov	R1, $txbeg		;
+		bis	#100, @#TXCSR		;
+		mov	(SP)+, R1		;
+		rts	PC			;
+						;
+flush:		cmp	$txbeg, $txend		;
+		bne	flush			;
+		rts	PC			;
+		                		;
+print:		mov	R1, -(SP)		;
+		mov	R0, R1			;
+1$:		movb	(R1)+, R0		;
+		beq	2$			;
+		jsr	PC, putch		;
+		br	1$			;
+2$:		mov	(SP)+, R1		;
+		rts	PC			;
+						;
+outhex:		mov	R1, -(SP)		;
+		mov	R0, -(SP)		;
+						;
+		bic	#177760, R0		;
+		movb	1$(R0), R1		;
+		mov	(SP), R0		;
+		asr	R0			;
+		asr	R0			;
+		asr	R0			;
+		asr	R0			;
+		bic	#177760, R0		;
+		movb	1$(R0), R0		;
+		swab	R0			;
+		bis	R0, R1			;
+		mov	R1, @#177714		;
+						;
+		mov	(SP), R0		;
+		swab	R0			;
+		bic	#177760, R0		;
+		movb	1$(R0), R1		;
+		movb	1(SP), R0		;
+		asr	R0			;
+		asr	R0			;
+		asr	R0			;
+		asr	R0			;
+		bic	#177760, R0		;
+		movb	1$(R0), R0		;
+		swab	R0			;
+		bis	R0, R1			;
+.if 	eq, <VM-3>				;
+		mov	R1, @#177716		;
+.iff                                		;
+		mov	R1, @#177715		;
+.endc						;
+						;
+		mov	(SP)+, R0		;
+		mov	(SP)+, R1		;
+		rts	PC			;
+						;
+1$:		.byte	077, 006, 133, 117	;
+		.byte	146, 155, 175, 007	;
+		.byte	177, 157, 167, 174	;
+		.byte	071, 136, 171, 161	;
+						;
+;_____________________________________________________________________________
+;
+entry:		mov	#$stack, SP		;
+		mov	#$rxbuf, $rxend		;
+		mov	#$rxbuf, $rxbeg		;
+		mov	#$txbuf, $txend		;
+		mov	#$txbuf, $txbeg		;
+						;
+		mov	#14001, R0		; '1801' logo
+		jsr	PC, outhex		;
+						;
+		mov	#100, @#RXCSR		;
+		mov     #000, @#TXCSR		;
+		clr	R0			;
+		mtps	R0			;
+						;
+;_____________________________________________________________________________
+;
+start:		mov	#KPAR0, R0		; page address registrs
+		mov	#UPAR0, R1		;		;
+		mov	#KPDR0, R2		; page description register
+		mov	#UPDR0, R3		;
+		clr	R5			; relocation bias
+		mov	#8., R4			; page count
+						;
+10$:		mov	R5, (R0)+		; initialize page base
+		mov	R5, (R1)+		;
+		mov	#77406, @R2		;
+		mov	(R2)+, (R3)+		;
+		sob	R4, 10$			; to next page
+						;
+		mov	#177600, -(R0)		; fix page 7
+		mov	@R0, -(R1)		;
+		MOV	@#10, -(SP)		; save vectors
+		MOV	@#12, -(SP)		;
+						;
+		MOV	#tr010, @#10		; initialize vectors
+		mov	#340, @#12		;
+		mov	#tr034, @#34		;
+		MOV	#340, @#36		;
+		mov	#tr250, @#250		;
+		mov	#340, @#252		;
+		bis	#1, @#MMR0		; enable MMU
+						;
+		mov	#ARGS, R2		; $EDMSG ARGUMENT LIST
+		mov	#170000, -(SP)		; set user PSW
+		mov	#UTASK, -(SP)		;SET USER PC
+
+
+
+
+MMR0	=:	177572
+KISDR0	=:	172300
+KISAR0	=:	172340
+UISDR0	=:	177600
+UISDR7	=:	177616
+UISAR0	=:	177640
+
+TPS	=:	177564
+TPB	=:	TPS+2
+
+PSW	=:	177776
+
+
+TR034::	INC	#-1			;TRAP LEVEL
+	BEQ	20$			;IF EQ START USER TASK
+	MOV	2(SP),(R2)+		;PUT PSW AFTER MTPS
+	MOV	R5,(R2)+		;PUT MMU FAULT FLAG
+	INC	#-1			;TASK LEVEL
+	BNE	30$			;IF NE ALL DONE
+	BIC	#6,@#UISDR7		;UNMAP I/O PAGE FOR USER
+20$:	MOV	@#UISDR7,(R2)+		;PUT UISDR0
+	MOV	#170000,2(SP)		;RESET USER PSW
+	MOV	2(SP),(R2)+		;PUT PSW BEFORE MTPS
+	MOV	#ZERO,R5		;AASUME NO MMU FAULT
+	RTI				;TO USER STATE
+
+30$:	CMP	(SP)+,(SP)+		;CLEAN STACK
+	MOV	(SP)+,@#12		;RESTORE VECTOR 10
+	MOV	(SP)+,@#10		;
+	CLR	@#MMR0			;DISABLE RELOCATION
+	CLR	@#PSW			;LOWER CPU PRIORITY
+	MOV	#BUFF,R0		;BUFFER ADDRESS
+	MOV	#FMTS,R1		;FORMAT STRING
+	MOV	#ARGS,R2		;ARGUMENT BLOCK
+	CALL	$EDMSG			;FORMAT MESSAGE
+	CLRB	@R0			;MAKE IT ASCIZ
+	.PRINT	#BUFF			;PRINT IT
+	.EXIT
+
+TR250::	MOV	#MMUF,R5		;MMU FAULT FLAG
+	RTI				;RETURN
+
+TR010::	MOV	#RESV,R5		;RESERVED INSTRUCTION FLAG
+	RTI				;RETURN
+
+UTASK::	CCC				;PARANOIA
+	MTPS	#357			;TRY TO MODIFY PSW
+	TRAP	0			;TO KERNEL STATE
+	BR	UTASK			;LOOP
+
+OUCHR::	TSTB	@#TPS
+	BPL	OUCHR
+	MOVB	R0,@#TPB
+	RETURN
+
+PRINT::	MOVB	(R1)+,R0
+	BEQ	10$
+	CALL	OUCHR
+	BR	PRINT
+10$:	RETURN
+
+;_____________________________________________________________________________
+;
+args:		.blkw	2*4
+buff:		.blkb	132.
+fmts:		.ascii	/UPDR7=%P, PSW=%P, MTPS #357, PSW=%P%I%N/
+		.ascii	/UPDR7=%P, PSW=%P, MTPS #357, PSW=%P%I/
+zero:		.byte	0
+
+mmuf:		.asciz	/, MMU FAULT/
+resv:		.asciz	/, RESERVED INSTRUCTION/
+
+;_____________________________________________________________________________
+;
+		.even				;
+		.rept	100			;
+		.word	0			;
+		.endr				;
+$stack		=.				;
+;_____________________________________________________________________________
+;
+		.even				;
+
+		.end
+
+
